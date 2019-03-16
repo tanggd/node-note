@@ -1,0 +1,12 @@
+{
+  "name": "antd",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "deploy": "bash deploy.sh"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+  }
+}
