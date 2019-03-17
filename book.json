@@ -1,7 +1,12 @@
 {
+  "title": "node.js学习笔记",
+  "author": "唐之初（tanggd）",
+  "description": "node.js学习笔记",
+  "language": "zh-hans",
+  "gitbook": "3.2.3",
   "links": {
     "sidebar": {
-      "github": "https://github.com/tanggd"
+      "我的github": "https://github.com/tanggd"
     }
   },
   "plugins": [
