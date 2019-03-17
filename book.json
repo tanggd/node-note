@@ -1,0 +1,12 @@
+{
+  "links": {
+    "sidebar": {
+      "github": "https://github.com/tanggd"
+    }
+  },
+  "plugins": [
+    "-livereload"
+  ],
+  "pluginsConfig": {
+  }
+}
