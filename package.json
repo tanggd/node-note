@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/tanggd/node-note/issues"
   },
-  "homepage": "https://github.com/tanggd/node-note#readme"
+  "homepage": "https://github.com/tanggd/node-note#readme",
+  "dependencies": {
+    "chalk-animation": "^1.6.0"
+  }
 }
