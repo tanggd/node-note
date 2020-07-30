@@ -1,12 +1,19 @@
 {
-  "name": "antd",
-  "version": "0.1.0",
-  "private": true,
+  "name": "node-note",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
   "scripts": {
-    "deploy": "bash deploy.sh"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "dependencies": {
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tanggd/node-note.git"
   },
-  "devDependencies": {
-  }
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tanggd/node-note/issues"
+  },
+  "homepage": "https://github.com/tanggd/node-note#readme"
 }
