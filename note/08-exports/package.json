@@ -1,0 +1,12 @@
+{
+  "name": "08-exports",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "tanggd <tanggd11@foxmail.com>",
+  "license": "MIT",
+  "keywords": [],
+  "description": ""
+}
