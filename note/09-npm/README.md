@@ -178,12 +178,14 @@ npm uninstall -g <package-name>
 
 npx 是一个非常强大的命令，从 npm 的 5.2 版本（发布于 2017 年 7 月）开始可用。
 
+如果你的npm版本无npx，你可以全局安装npx：npm install -g npx
+
 npx 可以运行使用 Node.js 构建并通过 npm 仓库发布的代码。
 
 运行 ``npx <commandname>`` 会自动地在项目的 node_modules 文件夹中找到命令的正确引用，而无需知道确切的路径，也不需要在全局和用户路径中安装软件包。
 
 ```bash
-# 使用cowsay。执行该命令，会查找本地，然后再查找全局
+# 使用cowsay
 npx cowsay "你好"
 
 # 输出
@@ -196,10 +198,36 @@ npx cowsay "你好"
                 ||----w |
                 ||     ||
 ```
+运行 vue CLI 工具以创建新的应用程序并运行它们：npx vue create my-vue-app。
+
+使用 create-react-app 创建新的 React 应用：npx create-react-app my-react-app。
+
+上面代码运行时，npx 将create-react-app下载到一个临时目录，使用以后再删除。所以，以后再次执行上面的命令，会重新下载create-react-app。
 
 npx node@10 -v #v10.18.1
 npx node@12 -v #v12.14.1
 
+指定node版本来执行js
+npx node@10.14.1 demo/xx.js
+
 npx 直接从 URL 运行任意代码片段
 npx <url-xxxxx>
-npx 
+npx https://github.com/tanggd/node-note/blob/master/demo/xx.js
+
+```bash
+# 执行 Gist 代码
+npx https://gist.github.com/zkat/4bc19503fe9e9309e2bfaa2c58074d32
+
+# 执行仓库代码
+npx github:piuccio/cowsay hello
+```
+
+注意，远程代码必须是一个模块，即必须包含package.json和入口脚本。
+
+参考资料
+
+- https://www.ruanyifeng.com/blog/2019/02/npx.html
+- https://www.npmjs.com/package/npx
+- https://alligator.io/workflow/npx/
+- https://medium.com/@maybekatz/introducing-npx-an-npm-package-runner-55f7d4bd282b
+- https://www.jianshu.com/p/14c813bba544
