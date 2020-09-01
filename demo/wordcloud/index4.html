@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Vue 测试实例</title>
+  <script src="https://unpkg.com/vue/dist/vue.js"></script>
+  <style>
+    #app {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      width: 200px;
+      height: 200px;
+      border: 1px solid red;
+      position: relative;
+    }
+
+    .item {
+      position: absolute;
+      animation: animate 10s linear infinite;
+      animation-delay: calc(-1s*var(--i));
+    }
+
+    /* .item:nth-child(1) {
+      animation-delay: -1s;
+    }
+    .item:nth-child(2) {
+      animation-delay: -2s;
+    }
+    .item:nth-child(3) {
+      animation-delay: -3s;
+    }
+    .item:nth-child(4) {
+      animation-delay: -4s;
+    }
+    .item:nth-child(5) {
+      animation-delay: -5s;
+    } */
+
+    @keyframes animate {
+      0% {
+        top: 180px;
+        left: 50px;
+        opacity: 0.5;
+      }
+
+      25% {
+        opacity: 1;
+      }
+
+      50% {
+        top: 0px;
+        left: 130px;
+        opacity: 0.5;
+      }
+
+      75% {
+        opacity: 0;
+      }
+
+      100% {
+        top: 180px;
+        left: 50px;
+        opacity: 0.5;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <div class="container">
+      <span v-for="(item,index) in textInfo" class="item" :style="`--i:${index}`" @mouseover="onHover(item)">{{item.textKey}}</span>
+      <!-- <span class="item">123</span>
+      <span class="item">123</span>
+      <span class="item">123</span>
+      <span class="item">123</span> -->
+    </div>
+  </div>
+
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data() {
+        return {
+          textInfo: [{
+              "textKey": "金融在线"
+            },
+            {
+              "textKey": "保险欺诈"
+            },
+            {
+              "textKey": "现金价值"
+            },
+            {
+              "textKey": "互联网产品"
+            },
+            {
+              "textKey": "线上资料库"
+            },
+            {
+              "textKey": "保单贷款"
+            },
+            {
+              "textKey": "风险意识"
+            },
+            {
+              "textKey": "保额确定"
+            },
+            {
+              "textKey": "E行销"
+            },
+            {
+              "textKey": "分红险"
+            },
+            // {
+            //   "textKey": "保险红包"
+            // },
+            // {
+            //   "textKey": "签单法宝"
+            // },
+            // {
+            //   "textKey": "非法集资"
+            // },
+            // {
+            //   "textKey": "如何轻互动"
+            // },
+            // {
+            //   "textKey": "画图说保险"
+            // }
+          ],
+        }
+      },
+      mounted() {},
+      methods: {
+        onHover(item) {
+          console.log(item)
+        }
+      }
+    })
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Vue 测试实例</title>
+  <script src="https://unpkg.com/vue/dist/vue.js"></script>
+  <script src="./tagcanvas.min.js"></script>
+  <style>
+    #myCanvas {
+      margin-top: 49px;
+    }
+
+    .b_10_3 {
+      text-align: center;
+      width: 220px;
+      height: 268px;
+    }
+
+    .b_10_3 span {
+      font-size: 12px;
+    }
+
+    .b_10_3 span.bold {
+      font-weight: bold;
+    }
+
+    .b_10_3 span:nth-child(1) {
+      width: 15%;
+      text-align: center;
+    }
+
+    .b_10_3 span:nth-child(2) {
+      width: 10%;
+      text-align: left;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <div class="b_10_3">
+      <canvas width="200" height="170" id="myCanvas"></canvas>
+      <div id="tags" style="display:none">
+        <a href="#" v-for="(value,index) in textInfo" :key="index" @click="clickItem(value)">{{value.textKey}}</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data() {
+        return {
+          textInfo: [{
+              "textKey": "金融在线"
+            },
+            {
+              "textKey": "保险欺诈"
+            },
+            {
+              "textKey": "现金价值"
+            },
+            {
+              "textKey": "互联网产品"
+            },
+            {
+              "textKey": "线上资料库"
+            },
+            {
+              "textKey": "保单贷款"
+            },
+            {
+              "textKey": "风险意识"
+            },
+            {
+              "textKey": "保额确定"
+            },
+            {
+              "textKey": "E行销"
+            },
+            {
+              "textKey": "分红险"
+            },
+            {
+              "textKey": "保险红包"
+            },
+            {
+              "textKey": "签单法宝"
+            },
+            {
+              "textKey": "非法集资"
+            },
+            {
+              "textKey": "如何轻互动"
+            },
+            {
+              "textKey": "画图说保险"
+            }
+          ],
+        }
+      },
+      created() {
+        // this.getTextData()
+      },
+      mounted() {
+        this.setTextAttribute();
+      },
+      methods: {
+        // getTextData: function () {
+        //   this.textInfo = TextData;
+        // },
+        setTextAttribute: function () {
+          try {
+            TagCanvas.Start('myCanvas', 'tags', {
+              interval: 20,
+              textColour: '#97d4ff',
+              outlineColour: '#fff',
+              shape: 'sphere',
+              textHeight: 14,
+              reverse: true,
+              noMouse: true,
+              depth: 0.5,
+              dragControl: false,
+              //                    decel:0.95,
+              maxSpeed: 0.05,
+              minSpeed: 0.05,
+              initial: [-0.08, 0]
+            });
+          } catch (e) {
+            console.log(e)
+          }
+        },
+        clickItem(v) {
+          console.log(v)
+        }
+      }
+    })
+  </script>
+</body>
+
+</html>
