@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+  <style type="text/css">
+    body,
+    html,
+    #container {
+      height: 100%;
+      margin: 0px;
+      font: 12px Arial;
+      position: relative;
+    }
+
+    .btn {
+      position: absolute;
+      top: 50px;
+      left: 50px;
+      width: 100px;
+      height: 100px;
+      text-align: center;
+      line-height: 100px;
+      background: red;
+      color: #fff;
+      z-index: 11111;
+    }
+  </style>
+  <title>万级以上的点</title>
+</head>
+
+<body>
+  <div class="btn" id="btn">Marker</div>
+  <div id="container" tabindex="0"></div>
+  <script src="https://webapi.amap.com/maps?v=1.4.15&key=您申请的key值"></script>
+  <script type="text/javascript">
+    // 万级以上的点标记的解决方案
+    var center = [120.256484, 30.235657]
+    var map = new AMap.Map('container', {
+      resizeEnable: true,
+      zoom: 18,
+      center
+    });
+
+    var marker = new AMap.Marker({
+      position: center,
+      icon: new AMap.Icon({
+        image: 'https://vdata.amap.com/icons/b18/1/2.png',
+        imageSize: new AMap.Size(30, 30)
+      }),
+      anchor: 'top-left',
+      offset: new AMap.Pixel(-15, -15),
+      zIndex: 101,
+      visible: false,
+      map: map
+    })
+
+    document.getElementById('btn').addEventListener('click', () => {
+      var provinces = new Array(1000).fill(1)
+
+      const points = []
+      for (var i = 0; i < provinces.length; i += 1) {
+        points.push({
+          id: i,
+          lnglat: [center[0] - Math.random(), center[1] - Math.random()],
+          style: Math.floor(Math.random() * 1000) % 2,
+          // lnglat: center,
+          // style: 1,
+        })
+      }
+
+
+      var style = [
+        {
+          url: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/dir-via-marker.png',
+          size: new AMap.Size(24, 24),
+          anchor: new AMap.Pixel(12, 12),
+        },
+        {
+          url: 'https://vdata.amap.com/icons/b18/1/2.png',
+          size: new AMap.Size(24, 24),
+          anchor: new AMap.Pixel(12, 12),
+        },
+      ]
+
+      var mass = new AMap.MassMarks(points, {
+        zIndex: 100,
+        cursor: 'pointer',
+        style: style
+      })
+
+      mass.setMap(map);
+      map.setFitView();
+
+
+      // 采用一个标识字段来判断点击的是哪个
+      var isMass = false
+      mass.on('click', function (e) {
+        marker.setPosition(e.data.lnglat);
+        marker.setMap(map)
+        isMass = true
+      })
+      map.on('click', e => {
+        if (isMass) {
+          console.log('点击的是mass')
+          marker.show()
+          isMass = false
+        } else {
+          marker.hide()
+          console.log('点击的是map')
+        }
+      })
+    })
+
+
+    
+
+
+
+
+  </script>
+</body>
+
+</html>

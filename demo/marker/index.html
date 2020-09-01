@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+  <style type="text/css">
+    body,
+    html,
+    #container {
+      height: 100%;
+      margin: 0px;
+      font: 12px Arial;
+      position: relative;
+    }
+
+    .btn {
+      position: absolute;
+      top: 50px;
+      left: 50px;
+      width: 100px;
+      height: 100px;
+      text-align: center;
+      line-height: 100px;
+      background: red;
+      color: #fff;
+      z-index: 11111;
+    }
+  </style>
+  <title>Marker example 普通点打点方法</title>
+</head>
+
+<body>
+  <div class="btn" id="btn">Marker</div>
+  <div id="container" tabindex="0"></div>
+  <script src="https://webapi.amap.com/maps?v=1.4.15&key=您申请的key值"></script>
+  <script type="text/javascript">
+    var center = [120.256484, 30.235657]
+    var map = new AMap.Map('container', {
+      resizeEnable: true,
+      zoom: 4,
+      center
+    });
+
+    document.getElementById('btn').addEventListener('click', () => {
+      var markers = []
+      var provinces = new Array(500).fill(1)
+      // 建议500个点
+
+      for (var i = 0; i < provinces.length; i += 1) {
+        var marker;
+        var icon = new AMap.Icon({
+          image: 'https://vdata.amap.com/icons/b18/1/2.png',
+          size: new AMap.Size(24, 24)
+        });
+        marker = new AMap.Marker({
+          icon: icon,
+          position: [center[0] - Math.random(), center[1] - Math.random()],
+          offset: new AMap.Pixel(-12, -12),
+          zIndex: 101,
+          map: map
+        });
+
+        markers.push(marker);
+      }
+      map.setFitView();
+    })
+
+
+
+
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      border: 1px solid red;
+      border-radius: 50%;
+      /* background: radial-gradient(circle at 100px 100px, #5cabff, #000); */
+      transform-style: preserve-3d;
+      transform-origin:50% 50%;
+      /* animation: animate 10s linear infinite; */
+    }
+
+    .item {
+      /* transform-origin:0% 0%; */
+      transform: translate(0, 0, 250px);
+    }
+
+    @keyframes animate {
+      0% {
+        transform: rotateX(0deg);
+      }
+
+      100% {
+        transform: rotateX(360deg);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <span class="item">11</span>
+  </div>
+</body>
+
+</html>

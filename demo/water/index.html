@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+  <style>
+    *{
+      margin: 0;
+      padding: 0;
+    }
+    body{
+      /*采用弹性布局实现居中*/
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;/*相对于视口的高度。视口被均分为100单位的vh*/
+      background: #111;
+    }
+    .container{
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .container .box{
+      width: 500px;
+      height: 500px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .container .box span{
+      position: absolute;
+      box-sizing: border-box;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      animation: animate 5s linear infinite;/*定义动画的时长*/
+      animation-delay: calc(-0.5s*var(--i));/*规定动画开始的延时，每个标签均延时0.5秒*/
+    }
+    .container .box:nth-child(2) span{
+      border: none;/*去除第二个边框*/
+      background: rgba(72, 231, 72, 0.25);/*为其添加背景色实现动画效果*/
+    }
+    /*设定动画效果，圆圈宽高均由0到达500px*/
+    @keyframes animate {
+      0%{
+        width: 0;
+        height: 0;
+      }
+      50%{
+        opacity: 1;
+      }
+      100%{
+        width: 500px;
+        height: 500px;
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <!--第一个波纹特效-->
+  <div class="box">
+    <span style="--i:1"></span>
+    <span style="--i:2"></span>
+    <span style="--i:3"></span>
+    <span style="--i:4"></span>
+    <span style="--i:5"></span>
+    <span style="--i:6"></span>
+    <span style="--i:7"></span>
+    <span style="--i:8"></span>
+    <span style="--i:9"></span>
+    <span style="--i:10"></span>
+  </div>
+  <!--第二个波纹特效-->
+  <div class="box">
+    <span style="--i:1"></span>
+    <span style="--i:2"></span>
+    <span style="--i:3"></span>
+    <span style="--i:4"></span>
+    <span style="--i:5"></span>
+    <span style="--i:6"></span>
+    <span style="--i:7"></span>
+    <span style="--i:8"></span>
+    <span style="--i:9"></span>
+    <span style="--i:10"></span>
+  </div>
+</div>
+</body>
+</html>

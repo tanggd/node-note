@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>海量点</title>
+  <style type="text/css">
+    body,
+    html,
+    #container {
+      height: 100%;
+      margin: 0px;
+      font: 12px Arial;
+      position: relative;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="container" tabindex="0"></div>
+  <script src="https://webapi.amap.com/maps?v=1.4.15&key=d941bb3a845aed994b410502b98e9ebd"></script>
+  <script src="https://webapi.amap.com/ui/1.0/main.js?v=1.0.11"></script>
+  <script>
+    var center = [120.256484, 30.235657]
+    var map = new AMap.Map('container', {
+      resizeEnable: true,
+      zoom: 10,
+      center
+    });
+
+    //加载PointSimplifier，loadUI的路径参数为模块名中 'ui/' 之后的部分 
+    AMapUI.loadUI(['misc/PointSimplifier'], function (PointSimplifier) {
+
+      if (!PointSimplifier.supportCanvas) {
+        alert('当前环境不支持 Canvas！');
+        return;
+      }
+
+      //启动页面
+      initPage(PointSimplifier);
+    });
+
+    function initPage(PointSimplifier) {
+      //创建组件实例
+      var pointSimplifierIns = new PointSimplifier({
+        map: map, //关联的map
+        compareDataItem: function (a, b, aIndex, bIndex) {
+          //数据源中靠后的元素优先，index大的排到前面去
+          return aIndex > bIndex ? -1 : 1;
+        },
+        getPosition: function (dataItem) {
+          //返回数据项的经纬度，AMap.LngLat实例或者经纬度数组
+          return dataItem.position;
+        },
+        getHoverTitle: function (dataItem, idx) {
+          //返回数据项的Title信息，鼠标hover时显示
+          // return '序号: ' + idx;
+          return ''
+        },
+        renderOptions: {
+          //点的样式
+          pointStyle: {
+            fillStyle: 'pink' //蓝色填充
+          },
+          //鼠标hover时的title信息
+          // hoverTitleStyle: {
+          //   position: 'top'
+          // }
+        }
+      });
+
+      //随机创建一批点，仅作示意
+      var data = createPoints(map.getCenter(), 1000000);
+
+      //设置数据源，data需要是一个数组
+      pointSimplifierIns.setData(data);
+
+      //监听事件
+      // pointClick pointMouseover pointMouseout
+      pointSimplifierIns.on('pointClick', function (e, record) {
+        console.log(e, record);
+      });
+    }
+
+    //仅作示意
+    function createPoints(center, num) {
+      var data = [];
+      for (var i = 0, len = num; i < len; i++) {
+        data.push({
+          position: [
+            center.getLng() - Math.random(),
+            center.getLat() - Math.random()
+          ]
+        });
+      }
+      return data;
+    }
+
+
+  </script>
+</body>
+
+</html>
