@@ -1,0 +1,397 @@
+
+<!DOCTYPE html>
+<html ng-app="personal.shareApp" class="theme-light">
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="application-name" content="BDP商业数据分析平台">
+    <meta name="description" content="仪表盘直接生成链接，将数据通过BDP数据平台直接分享给你的工作伙伴或老板">
+    <meta name="keywords" content="可视化效果、数据呈现、可视化图表">
+    <meta name="renderer" content="webkit">
+    <title>BDP分享仪表盘，分享可视化效果</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <script src="https://m1.bdp.cn/static/js/personal/share-app/check-client_9b7aa13.js" data-fixed="true"></script>
+    <script data-fixed="true" id="J_i18n" src="https://m1.bdp.cn/static/i18n/locale.zh.js?v=4c869aa6"></script>
+<link type="text/css" rel="stylesheet" href="https://m1.bdp.cn/static/pkg/shareApp-bundle_2e87364.css">
+<link type="text/css" rel="stylesheet" href="https://me.bdp.cn/static/dashboard-core/chart-style/dalaba-style_8aa63d1.css" id="chartCss">
+</head>
+<body ng-controller="dashCtrl" class="share-index-body zh" ng-class="{'dash-auto-width': !(dashLayoutInfo.fixed_width || dashLayoutInfo.layout_style == 2), 'share-adv-dash': shareAdvDash.dashCategory == 2}">
+
+<!-- 供分享到微信时，展示图标用 -->
+<div style="display:none"><img src="https://m1.bdp.cn/static/img/bdp_logo_e0d7e14.png"></div>
+<div class="description" style="display:none">BDP，商业数据分析平台。数据驱动管理，提升经营绩效</div>
+<header class="share-header-wrap bdp-header-wraper clearfix ng-hide" ng-show="!appBrowserView">
+    <div class="container header-title pr">
+        <h1 class="logo-personal">
+            <a class="logo-link" href="/home.html" target="_blank">
+                BDP
+            </a>
+        </h1>
+        <a class="back-personal-bdp bdp-btn-ver2 text-center ng-hide" href="/index.html" ng-show="share_user_info.isLogin">返回首页</a>
+        <a class="back-personal-bdp bdp-btn-ver2 text-center ng-hide" href="/register.html" ng-show="!share_user_info.isLogin">免费使用</a>
+    </div>
+</header>
+<div class="share-dash-title-wrap" bindonce="">
+    <div class="container dash-title-name" ng-hide="appBrowserView">
+        <h3 class="dashboard-name bright-font nowrap" ng-bind="dashTitle"></h3>
+    </div>
+    <div class="container ng-hide" ng-show="ready">
+        <div class="user-info clearfix" ng-if="share_user_info">
+            <img class="user-info-pic" ng-cloak="" ng-src="/static/images/user/{{share_user_info.photo_id || 1}}-head-pic.png">
+            <div class="user-info-name project-nav">
+                <div class="user-name nowrap" ng-bind="share_user_info.name"></div>
+                <div class="user-date font-text-tip" ng-cloak=""><span ng-bind="'|'"></span><span class="ml4" ng-bind="outer_share_info.share_time * 1000 | date: 'yyyy/MM/dd HH:mm'"></span></div>
+            </div>
+            <div ng-if="global.globalDashFilter.length && global.globalDashFilterDisplay.length && vm.dashType == 2" class="dash-global-wrap ng-cloak display-inline-block vm" global-filter="" original-global-filter="global.originalGlobalFilter" global-dash-filter="global.globalDashFilter" global-dash-filter-items="global.globalDashFilterItems" global-dash-filter-display="global.globalDashFilterDisplay" rule-id="global.rule_id" show-loading="showLoading" on-share-page="true" draw_chart_url="draw_chart_url"></div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="page-loading" ng-if="!ready"></div>
+
+    <div ng-if="vm.dashType == 3" class="ng-cloak error-page">
+        <div class="error-tip">
+            <i class="ico-share-cancelled"></i>
+
+            <p class="share-dashErrMsg">该分享已被取消或不存在，<i ng-bind="vm.n" class="time-color"></i>秒后将自动跳转至首页</p>
+            <a href="/home.html" class="back-Home">返回首页</a>
+        </div>
+    </div>
+    <div class="dash-password-wrap ng-cloak" ng-if="vm.dashType == 1">
+        <div class="password-tips-wrap">
+            <p class="password-title">查看私密分享仪表盘</p>
+            <img class="password-banner" src="https://m1.bdp.cn/static/images/share-password.png" alt="">
+            <p class="password-tip font-text-tip">该仪表盘为私密分享，请输入密码查看</p>
+        </div>
+        <div class="password-from clearfix">
+            <span class="from-label font-text-tip">提取密码</span>
+            <input class="from-input" type="text" placeholder="请输入提取密码" ng-focus="vm.dashPsdErrMsg = false" ng-model="vm.dashPassword" ng-class="{'error': vm.dashPsdErrMsg}">
+            <button class="from-submit bdp-btn bdp-btn-blue2" ng-click="getDashboardInfo(vm.dashPassword)">确定</button>
+            <div class="cr-hint password-err-tip" ng-show="vm.dashPsdErrMsg" ng-cloak="">{{vm.dashPsdErrMsg}}</div>
+        </div>
+    </div>
+    <div ng-if="vm.dashType == 2" class="ng-cloak">
+        <div class="dashboard ng-cloak" ng-show="ready">
+            <div class="share-description-wrap clearfix word-break-all" ng-show="outer_share_info.description">
+                <div class="share-description" ng-bind="outer_share_info.description"></div>
+            </div>
+            <div class="dash-wrapper operate-none-gridster" ng-style="dashLayoutInfo.gridsterStyle" ng-class="{
+                    'dash-one-block':!dashLayoutInfo.show_block,
+                    'edit-mode':dashEditMode,
+                    'readonly-mode': !dashEditMode,
+                    'dash-fixed-width':dashLayoutInfo.fixed_width,
+                    'dash-mode-free':dashLayoutInfo.layout_style == 2,
+                    'has-global-filter': global.globalDashFilter.length > 0 && global.globalDashFilterDisplay.length,
+                    'data-screen-wrap': shareAdvDash.dashCategory == 2,
+                    'dash-edit-content-view': shareAdvDash.dashCategory == 2
+                    }">
+                <div class="page-loading" ng-if="dashLoading"></div>
+                <div class="folder-empty" ng-if="noDashes">
+                    <i class="bdp-icon ico-new-dashboard ico-no-opacity"></i>
+                    <p class="mt8">文件夹为空，请从左侧创建仪表盘</p>
+                </div>
+
+                <div gridster="gridsterOpts">
+                    <div ng-if="!selected.proj_share" ng-hide="dashInit.load">
+                        <div ng-if="selected.dsh_id  && dashStandardItems.length == 0" ng-click="addItem()" class="empty-dash-add">
+                            <span>
+                                <i class="a"></i>
+                                <i class="b"></i>
+                            </span>
+                            <div class="textalign-center empty-dash-add-tip">添加图表</div>
+                        </div>
+                    </div>
+                    <ul id="J_gridster" ng-if="dashLayoutInfo.layout_style == 1">
+                        <li gridster-item="item" ng-repeat="item in dashStandardItems" row="item.row" col="item.col" size-x="item.sizeX" size-y="item.sizeY" ng-hide="chartdel['chart'+current_item.meta.ct_id]" id="{{item.children[0].meta.ct_id}}" data-chart-id="{{item.children[0].meta.ct_id}}" ng-mouseleave="mouseleaveItem()" ng-class="{
+                        'selected':dashLayoutInfo.ct_id === item.children[0].meta.ct_id,
+                        'border-left':item.children[0].meta.dash_setting.border_left,
+                        'border-right':item.children[0].meta.dash_setting.border_right,
+                        'border-top':item.children[0].meta.dash_setting.border_top,
+                        'border-bottom':item.children[0].meta.dash_setting.border_bottom,
+                        'no-border':item.children[0].meta.dash_setting.border_null,
+                        'no-title': item.children[0].meta.type === 'C310' || !item.children[0].meta.dash_setting.show_title,
+                        'no-axis': !item.children[0].meta.dash_setting.show_axis,
+                        'component-text': item.children[0].meta.ct_id.indexOf('text_') > -1
+                        }">
+                            <div ng-repeat="child in item.children" class="chart-box J_chart_box">
+
+                                <!-- 注意ngIf增加了一个子作用域，所以$parent要增加一层 -->
+                                <div ng-if="child.meta.ct_id.indexOf('text_') < 0">
+                                    <div class="item-chart-title">
+                                        <div class="item-chart-title-bd nowrap">
+                                            <div class="display-inline-block drill-tip" ng-if="child.meta.level_fields.length > 1">
+                                                <i class="bdp-icon ico-drill"></i>
+                                                <div class="drill-tip-bd mt5">
+                                            <span ng-repeat="drill_field in child.meta.level_fields">
+                                                <i class="bdp-icon ico-slicesnav-arrow" ng-show="!$first"></i>
+                                                {{drill_field.nick_name || drill_field.name}}
+                                            </span>
+                                                    <div class="arrow"><em></em><span></span></div>
+                                                </div>
+                                            </div>
+
+                                            <i class="bdp-icon ico-linked" ng-if="child.meta.chart_link.linked_chart_type == '2'"></i>
+                                            <span class="no-margin" ng-click="">{{child.meta.name}}</span>
+                                    <span class="filter-item" ng-repeat="it in child.meta.filter_list_inner" ng-if="it.range.length && !it.adv_type">
+                                        <em ng-if="it.data_type === 'date' && !it.granularity">{{it.range | format_date:child.meta.adv_date_list}}
+                                            <span ng-if="it.granularity == 'week'">({{it.range[0] | weekFormat:it.range[0]}})</span>
+                                        </em>
+                                        <em ng-if="it.data_type === 'date' && it.granularity">{{it.range | inner_range_date_format:it}}
+                                            <span ng-if="it.granularity == 'week'">({{it.range[0] | weekFormat:it.range[0]}})</span>
+                                        </em>
+                                        <em ng-if="it.data_type !== 'date' && !it.inner_adv_type">{{it.range | dash_sub_date:it}}</em>
+                                        <em ng-if="it.data_type !== 'date' && it.inner_adv_type">自定义</em>
+                                    </span>
+                                    <span class="filter-item" ng-repeat="it in child.meta.diff_filter track by $index">
+                                        <em>{{it}}</em>
+                                    </span>
+                                        </div>
+                                    </div>
+                                    <div class="item-chart gridster-no-drag J_item_chart" ng-class="{'noscroll':selected_type === 'C200' || selected_type === 'C400'}" id="{{child.dom_id}}" size-x="{{item.sizeX}}" size-y="{{item.sizeY}}">
+                                        <div class="drill-crumbs-wrap"></div>
+                                        <div bdp-chart="draw_chart_url[child.dom_id].options" display-mode="{{item.sizeX + '*' + item.sizeY}}" data-updatetime="{{child.meta.update_time}}" data-index="$parent.$parent.$index" data-domid="child.dom_id" data-lazy-loaded="draw_chart_url[child.dom_id].lazyload" class="chart" ng-class="{'chart-table':selected_type === 'C200', 'chart-canvas-table':selected_type === 'C200',
+                                    'show-datalabels': child.meta.dash_setting.show_datalabels,
+                                    'hide-total':!child.meta.dash_setting.show_total}"></div>
+                                    </div>
+                                    <div chart-operate="" data-ct-id="{{child.meta.ct_id}}" class="gridster-no-drag"></div>
+                                    <div ng-show="dashEditMode" class="base-loading-layer" ng-click="dash.editChartMeta(child)"></div>
+
+                                </div>
+
+                            </div>
+                        </li>
+                    </ul>
+
+                    <ul id="J_gridster" ng-if="dashLayoutInfo.layout_style == 2">
+                        <li gridster-item="item" ng-repeat="item in dashStandardItems" ng-style="item.itemStyle" ng-hide="chartdel['chart'+current_item.meta.ct_id]" id="{{item.children[0].meta.ct_id}}" data-chart-type="{{item.children[0].meta.type}}" data-chart-id="{{item.children[0].meta.ct_id}}" data-is-special-chart="{{item.children[0].meta.is_special_chart}}" ng-mouseleave="mouseleaveItem(item)" ng-mouseover="mouseoverItem(item)" ng-class="{
+                                'selected':dashLayoutInfo.ct_id === item.children[0].meta.ct_id,
+                                'border-left':item.children[0].meta.dash_setting.border_left,
+                                'border-right':item.children[0].meta.dash_setting.border_right,
+                                'border-top':item.children[0].meta.dash_setting.border_top,
+                                'border-bottom':item.children[0].meta.dash_setting.border_bottom,
+                                'no-title': item.children[0].meta.type === 'C310' || !item.children[0].meta.dash_setting.show_title,
+                                'no-axis': !item.children[0].meta.dash_setting.show_axis,
+                                'no-legend': !item.children[0].meta.dash_setting.show_legend,
+                                'component-text': item.children[0].meta.ct_id.indexOf('text_') > -1 || item.children[0].meta.type == 'C105',
+                                'no-edit-mode': !dashEditMode,
+                                'top-index-layer': item.isTopIndex,
+                                'resize-disable': lockItemPosMap && lockItemPosMap[item.children[0].meta.ct_id]
+                            }">
+                            <div class="data-screen-item-box gridbox-border-{{item.borderType}}" ng-show="item.borderType && item.borderType != 'CUSTOM'">
+                                <div class="data-screen-item-top">
+                                    <div class="data-screen-item-left"></div>
+                                    <div class="data-screen-item-center"></div>
+                                    <div class="data-screen-item-right"></div>
+                                </div>
+                                <div class="data-screen-item-middle">
+                                    <div class="data-screen-item-left"></div>
+                                    <div class="data-screen-item-center"></div>
+                                    <div class="data-screen-item-right"></div>
+                                </div>
+                                <div class="data-screen-item-bottom">
+                                    <div class="data-screen-item-left"></div>
+                                    <div class="data-screen-item-center"></div>
+                                    <div class="data-screen-item-right"></div>
+                                </div>
+                            </div>
+                            <div ng-repeat="child in item.children" ng-class="{'chart-box': ['C102','C104'].indexOf(child.meta.type) < 0, 'gridster-no-drag': lockItemPosMap && lockItemPosMap[child.meta.ct_id] }" class="auto-size J_chart_box" ng-click="dash.clickGridsterItem(child, item)">
+                                <div ng-if="child.meta.ct_id.indexOf('text_') > -1 || child.meta.type == 'C105'">
+                                    <div text-angular="" class="item-text-chart" ng-style="child.meta.style" ng-model="child.meta.html" ta-disabled="true" ta-unsafe-sanitizer="true"></div>
+                                </div>
+
+                                <div ng-if="child.meta.type && child.meta.type.indexOf('C102') > -1" class="auto-size screen-item-image">
+                                    <div ng-if="item.url" class="auto-size" style="background:url({{item.url}}) no-repeat center; background-size: contain"></div>
+                                </div>
+
+                                <div ng-if="child.meta.type && child.meta.type.indexOf('C103') > -1" class="auto-size screen-item-image" ng-class="{'screen-item-video': dashLayoutInfo.ct_id === item.children[0].meta.ct_id}">
+                                    <div ng-if="!item.src" class="auto-size screen-item-placeholder-video"></div>
+                                    <video class="auto-size ng-hide" ng-if="item.autoplay  && item.loop && item.src" ng-show="item.autoplay  && item.loop" muted="muted" preload="auto" controls="controls" autoplay="autoplay" loop="loop" ng-src="{{item.src | trustUrl}}">
+                                    </video>
+                                    <video class="auto-size ng-hide" ng-if="item.autoplay  && !item.loop && item.src" ng-show="item.autoplay  && !item.loop" muted="muted" preload="auto" controls="controls" autoplay="autoplay" ng-src="{{item.src | trustUrl}}">
+                                    </video>
+                                    <video class="auto-size ng-hide" ng-if="!item.autoplay  && item.loop && item.src" ng-show="!item.autoplay  && item.loop" muted="muted" preload="auto" controls="controls" loop="loop" ng-src="{{item.src | trustUrl}}">
+                                    </video>
+                                    <video class="auto-size ng-hide" ng-if="!item.autoplay  && !item.loop && item.src" ng-show="!item.autoplay  && !item.loop" muted="muted" preload="auto" controls="controls" ng-src="{{item.src | trustUrl}}">
+                                    </video>
+                                </div>
+
+                                <!-- 注意ngIf增加了一个子作用域，所以$parent要增加一层 -->
+                                <div ng-if="child.meta.type && ['C101','C102','C103','C104','C105'].indexOf(child.meta.type) < 0">
+                                    <div class="item-chart-title">
+                                        <div class="item-chart-title-bd nowrap">
+                                            <div class="display-inline-block drill-tip" ng-if="child.meta.level_fields.length > 1">
+                                                <i class="bdp-icon ico-drill"></i>
+                                                <div class="dropdown-wrap drill-tip-bd">
+                                                    <span ng-repeat="drill_field in child.meta.level_fields">
+                                                        <i class="bdp-icon ico-slicesnav-arrow" ng-show="!$first"></i>
+                                                        {{drill_field.nick_name || drill_field.name}}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <i class="bdp-icon ico-linked" ng-if="child.meta.chart_link.linked_chart_type == '2'"></i>
+                                            <i class="bdp-icon ico-chart-jump" ng-if="child.meta.chart_jump.can_jump == '1'"></i>
+                                            <span class="no-margin" ng-click="">{{child.meta.name}}</span>
+                                            <div class="loading-wrap">
+                                                <div class="loader-inner ball-spin-fade-loader">
+                                                    <div></div>
+                                                    <div></div>
+                                                    <div></div>
+                                                    <div></div>
+                                                    <div></div>
+                                                    <div></div>
+                                                    <div></div>
+                                                    <div></div>
+                                                </div>
+                                            </div>
+                                            <span class="filter-item" ng-repeat="it in child.meta.filter_list_inner" ng-if="it.range.length && !it.adv_type">
+                                                <em ng-if="it.data_type === 'date' && !it.granularity" ng-hide="AllMap.indexOf( (it.range | format_date:child.meta.adv_date_list ) ) >= 0">
+                                                    {{it.range | format_date:child.meta.adv_date_list}}
+                                                    <span ng-if="it.granularity == 'week'">({{it.range[0] | weekFormat:it.range[0]}})</span>
+                                                </em>
+                                                <em ng-if="it.data_type === 'date' && it.granularity">{{it.range | inner_range_date_format:it}}
+                                                    <span ng-if="it.granularity == 'week'">({{it.range[0] | weekFormat:it.range[0]}})</span>
+                                                </em>
+                                                <em ng-if="it.data_type !== 'date' && !it.inner_adv_type && it.range_type != 0">{{it.range | dash_sub_date:it}}</em>
+                                                <em ng-if="it.data_type !== 'date' && ( (it.inner_adv_type && it.rangeNumber != 1) || it.range_type == 0 )">
+                                                    <span ng-if="!it.nick_name">{{it.name}}</span>
+                                                    <span ng-if="!!it.nick_name">{{it.nick_name}}</span>
+                                                    自定义
+                                                </em>
+                                                <em ng-if="it.data_type !== 'date' && it.inner_adv_type && it.rangeNumber == 1 && it.range_type != 0 ">
+                                                    {{it.rangeFirstField | dash_sub_date:it}}
+                                                </em>
+                                            </span>
+                                            <span class="filter-item" ng-repeat="it in child.meta.diff_filter track by $index">
+                                                <em>{{it}}</em>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="item-chart gridster-no-drag" ng-class="{'noscroll':selected_type === 'C200' || selected_type === 'C400'}" id="{{child.dom_id}}" size-x="{{item.sizeX}}" size-y="{{item.sizeY}}">
+                                        <div class="drill-crumbs-wrap"></div>
+                                        <div bdp-chart="draw_chart_url[child.dom_id].options" display-mode="{{item.sizeX + '*' + item.sizeY}}" data-updatetime="{{child.meta.update_time}}" data-index="$parent.$parent.$index" data-domid="child.dom_id" data-lazy-loaded="draw_chart_url[child.dom_id].lazyload" class="chart" ng-class="{'chart-table':selected_type === 'C200', 'chart-canvas-table':selected_type === 'C200',
+                                                'chart-funnel overflow-hidden':selected_type === 'C330',
+                                                'show-datalabels': child.meta.dash_setting.show_datalabels,
+                                                'hide-total':!child.meta.dash_setting.show_total}" data-ctid="{{draw_chart_url[child.dom_id].options.ct_id}}"></div>
+                                        <div class="loading-wrap" ng-if="item.children[0].meta.type === 'C310'">
+                                            <div class="loader-inner ball-spin-fade-loader">
+                                                <div></div>
+                                                <div></div>
+                                                <div></div>
+                                                <div></div>
+                                                <div></div>
+                                                <div></div>
+                                                <div></div>
+                                                <div></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div chart-operate="" data-ct-id="{{child.meta.ct_id}}" class="gridster-no-drag" data-origin="adv_dash_edit"></div>
+                                </div>
+                            </div>
+
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="advertising">
+            <a class="text-advertes" href="/register.html" target="_blank">
+                <span>我也想用BDP制作专属的数据报表，直观又酷炫！</span>
+                <span class="btn-advertes">免费使用</span>
+            </a>
+        </div>
+
+        <div class="comment-wrap" ng-controller="commentCtrl">
+            <div class="share-block ng-cloak" ng-show="ready && !appBrowserView" ng-controller="shareCtrl">
+                <div class="favor-panel fl">
+                    <i class="bdp-icon ico-favor-large" ng-class="{'ico-favor-active':is_like == 1}" ng-click="addFavor($event)"></i>
+                    赞
+                    <span class="favor-count">{{outer_share_info.like_total}}</span>
+                </div>
+                <div class="share-list fr" ng-if="outer_share_info && !outer_share_info.password">
+                    <span class="mr16 vm">分享至</span>   
+                    <div class="bshare-custom">
+                        <!-- <a title="分享到QQ" class="bshare-qqim bdp-share-icon bdp-share-qqim"></a> -->
+                        <a title="分享到微信" class="bdp-share-icon bdp-share-weixin" ng-hide="mobileMode" ng-mouseenter="shareToWeChat($event)"></a>
+                        <a title="分享到QQ空间" class="bshare-qzone bdp-share-icon bdp-share-qzone" ng-click="shareDashboardTo('qzone', dashTitle)"></a>
+                        <a title="分享到新浪微博" class="bshare-sinaminiblog bdp-share-icon bdp-share-sinaminiblog" ng-click="shareDashboardTo('tsina', dashTitle)"></a>
+                    </div>
+                </div>
+                
+            </div>
+
+            <div class="comment-block ng-cloak" ng-show="ready">
+                <div class="clearfix mb16">
+                    <textarea class="comment-textarea" style="width: 100%" ng-model="currentComment.text" ng-keyup="onKeyUp($event)" placeholder="说说你的看法..." maxlength="500"></textarea>
+                    <a class="fr submit-comment-btn bdp-btn bdp-btn-blue2" ng-click="submitComment()">提交评论</a>
+                </div>
+                
+                <div class="font-text-tip font-size-14 line-height-32"><span class="font-w-b bright-font mr4">全部评论</span>({{comment.total}})</div>
+                <ul class="comment-list">
+                    <li ng-repeat="cm in comment.list track by cm.cmt_id" class="clearfix" ng-class="{last: $last}">
+                        <div class="avatar fl">
+                            <img ng-src="/static/images/user/{{cm.photo_id}}-head-pic.png" width="40" height="40" alt="头像" ng-if="cm.photo_id">
+                            <img ng-src="/static/images/anonymous/{{cm.color_id}}-head-pic.png" width="40" height="40" alt="头像" ng-if="cm.color_id != -1">
+                        </div>
+                        
+                        <div class="comment-main">
+                            <div>
+                                <span class="user-name display-inline-block vm nowrap">{{cm.name}}</span>
+                                <span class="ctime vm">{{ calculateTime(cm.ctime)}}</span>
+                                <div class="reply">
+                                    <a ng-click="onReply(cm)" class="cursor-pointer comment-reply-btn active-font" ng-class="{'reply-option-only':comment.current_user_id == '' || (comment.current_user_id != cm.user_id && comment.current_user_id != share_user_id)}">回复</a>
+                                    <a class="cursor-pointer comment-delete-btn" ng-click="deleteComment(cm)" ng-if="(!!comment.current_user_id && comment.current_user_id == cm.user_id) || comment.current_user_id == share_user_id">删除</a>
+                                </div>
+                            </div>
+                            <div class="comment-content">{{cm.comment}}</div>
+                        </div>
+                    </li>
+                </ul>
+                <div class="cursor-pointer text-center mt8 font-size-14 font-text-tip" ng-if="comment.total > comment.list.length">
+                    <span ng-click="showAllComments()">查看历史{{comment.total - comment.list.length }}条评论</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div ng-show="global.hint" class="errTipsLayer">
+        <div class="errTips" ng-bind="global.hint"></div>
+    </div>
+
+    <div class="footer ng-cloak" ng-show="ready && vm.dashType != 1">
+        Powered by <a class="highlight" href="https://me.bdp.cn">BDP (Business Data Platform)</a>
+    </div>
+
+</div>
+
+<!-- start polyfill -->
+<!-- end polyfill -->
+<!-- <script src="/static/js/services/services.js"></script> -->
+<!-- <script src="/static/js/services/multiple-pro-service.js"></script> -->
+<!-- <script src="/static/js/services/global-date-scheme-service.js"></script> -->
+<!-- <script src="/static/js/filters/filter.js"></script> -->
+<!-- <script src="/static/js/services/commonService.js"></script> -->
+<!-- <script src="/static/js/services/commonMap.js"></script> -->
+
+<!-- <script src="/static/js/directives/directives.js"></script> -->
+<!-- <script src="/static/js/directives/dateFormulaDirective.js"></script> -->
+<!-- <script src="/static/js/date-granularity/dateGranularityDirective.js"></script> -->
+
+<!-- <script src="/static/js/worktable/directives/searchTableDirective.js"></script> -->
+<script type="text/javascript" charset="utf-8" src="https://m1.bdp.cn/static/pkg/jquery-angular-lib_6b3e8ca.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://m1.bdp.cn/static/js/lib/angular-ui/ui-mask/mask_2394679.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://m1.bdp.cn/static/pkg/visi_a5ff397.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://m1.bdp.cn/static/pkg/shareApp.bundle_21c25dc.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://m1.bdp.cn/zh/static/pkg/app_4c869aa6.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://m1.bdp.cn/static/pkg/auto_combine_23c9d_b28832d.js"></script>
+<script>window.addEventListener("message",function(e){"embed-share-page"==e.data&&$("body").addClass("embed-share-page")},!1),$(document).on("click.embedClick",function(e){var a={event:"embed-share-click",url:location.href};window.parent.postMessage(JSON.stringify(a),"*"),$(document).off("click.embedClick")})</script>
+
+
+<script>var _hmt=_hmt||[];!function(){var e=document.createElement("script");e.src="//hm.baidu.com/hm.js?26f4ab258444603cf0bec2222ed39db4";var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(e,t)}()</script>
+
+<script type="text/javascript">!function(){function e(){var r;a<6?r=10*a+"min":(r=(a-6)/2+1+"h",n=18e5),BDPLogger.log("feStatistics",{category:"performance",action:"usedJSHeapSize",opt_label:r,opt_value:performance.memory.usedJSHeapSize}),a++,a<15&&setTimeout(e,n)}var n=6e5;window.performance&&performance.memory&&setTimeout(e,n);var a=1}(),function(e){var n=e.sdk_url,a=e.name,r=window,t=document,o="script",c=null,i=null,s=1*new Date;r.__BDP_DATA_ANALYTIC__=a,r[a]=r[a]||function(e){return function(){(r[a]._q=r[a]._q||[]).push([e,arguments])}};for(var m=["track","quick","register","registerPage","registerOnce"],u=0;u<m.length;u++)r[a][m[u]]=r[a].call(null,m[u]);r[a]._t||(c=t.createElement(o),i=t.getElementsByTagName("head")[0],c.async=0,c.src=n+"?_t="+s,i.appendChild(c),r[a]._t=1*new Date,r[a].para=e)}({sdk_url:"//sdk.bdp.cn/bdpa-sdk-js.js",name:"bdpa",token:"anh5OWt2cgB4cmgBfXBRWxIMMwUUDC1danAVXGh3XF14A2sBbmFRbxELICIFDXUNigAAAA==",debug_mode:!1}),bdpa.register({ver:2008204267})</script>
+
+
+</body>
+</html>

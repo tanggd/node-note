@@ -1,0 +1,113 @@
+<div class="global-filter-l global-filter-handler">
+  <a class="bdp-icon-wrap ml24"><i class="bdp-icon ico-filter"></i></a><a class="bdp-icon-wrap cursor-pointer" ng-if="scrollHandler.firstIndex > 0" ng-click="scrollHandler.scroll(-1)"><i class="bdp-icon ico-triangle-left"></i></a>
+</div>
+<div class="global-filter global-filter-share filter-i-w">
+  <dl class="filter-i" ng-repeat="it in globalDashFilter" click-outside="it.show = false" outside-active="it.show" ng-if="!it.config.hide_in_dash">
+      <dd ng-if="it.data_type !== 'date'">
+          <div class="filter-i-list-w">
+              <p class="filter-i-name" ng-click="globalFilterModule.getItemList($event,it)">
+                  <span class="nowrap" title="{{it.range | sub_date:it}}" ng-show="it.range_type != 0">
+                      {{it.range | sub_date:it}}
+                  </span>
+                  <span ng-show="it.range_type == 0" class="nowrap" title="自定义">
+                      自定义
+                  </span>
+                  <i class="bdp-icon ico-triangle-down arrow-down"></i>
+              </p>
+              <div class="filter-i-list J_globle_filter_layer" ng-show="it.show" ng-style="adjustWidth[it.df_id]">
+                  <div ng-loading-gif="" size="size-1x" placeholder="true" ng-show="showLoading"></div>
+
+                  <div class="pd3 query-box auto" ng-if="queryString[it.df_id].total > 20 && queryString[it.df_id].total <= 100">
+                      <input type="text" class="query-text" ng-model="queryKwd[it.df_id]" ng-input-text="" ng-keyup="globalFilterModule.enterToQuery({'e':$event,'filter':it,'is_advance':false,'real_search':false})">
+                  </div>
+                  <div ng-if="showQueryfilter[it.df_id]" ng-show="!showLoading" class="query-box">
+                      <input type="text" class="query-text" ng-model="queryKwd[it.df_id]" ng-keyup="globalFilterModule.enterToQuery({'e':$event,'filter':it,'is_advance':false,'real_search':true})">
+                      <a class="bdp-icon-wrap query-btn" ng-click="globalFilterModule.query(it)">
+                          <i class="bdp-icon ico-search"></i>
+                      </a>
+                  </div>
+                  <ul ng-show="!showLoading">
+                      <li ng-if="it.config.show_all">
+                          <a ng-class="{'active':it.range.length == 0 }" ng-click="resetRangeType(it);refreshCharts(it,'',[])">全部</a>
+                      </li>
+                      <li ng-repeat="query in queryString[it.df_id].list | filter:queryString[it.df_id].keyword track by $index">
+                          <a class="filter-list-a" title="{{query}}" ng-click="resetRangeType(it);refreshCharts(it,query,[query])" ng-class="{'active':it.range[0] == query }">{{query}}</a>
+                      </li>
+                      <li ng-if="queryString[it.df_id].list.length == 0" class="empty" style="padding:3px">
+                          <p>无检索结果</p>
+                      </li>
+                  </ul>
+
+              </div>
+          </div>
+          <span class="filter-i-adv" ng-click="globalFilterModule.getItemListAfterDialog($event,it,globalFilterModule.openAdvanceModal)">多选</span>
+
+      </dd>
+      <dd ng-if="it.data_type === 'date'">
+          <div class="filter-i-list-w">
+              <p class="filter-i-name" ng-click="globalFilterModule.getItemList($event,it)">
+
+                  <span class="nowrap" ng-if="it.config.granularity !== ''" title="{{it.range[0] | sub_date:it}}">
+                      {{it.range[0] | sub_date:it}}
+                      <em ng-if="it.range[0] && it.config.granularity == 'week'">({{it.range[0] | weekFormat}})</em>
+                  </span>
+
+                  <span class="nowrap" ng-if="!it.config.granularity" title="{{it.range | format_date:it.adv_date_list:it.name}}">
+                      {{it.range | format_date:it.adv_date_list:it.name}}
+                  </span>
+
+                  <i class="bdp-icon ico-triangle-down arrow-down"></i>
+              </p>
+
+              <div class="filter-i-list J_globle_filter_layer" ng-show="it.show" ng-style="adjustWidth[it.df_id]">
+                  <div ng-loading-gif="" size="size-1x" placeholder="true" ng-show="showLoading"></div>
+
+                  <div class="pd3 query-box auto" ng-if="queryString[it.df_id].total > 20 && queryString[it.df_id].total <= 100">
+                      <input type="text" class="query-text" ng-model="queryKwd[it.df_id]" ng-input-text="" ng-keyup="globalFilterModule.enterToQuery({'e':$event,'filter':it,'is_advance':false,'real_search':false})">
+                  </div>
+                  <div ng-if="showQueryfilter[it.df_id]" ng-show="!showLoading" class="query-box">
+                      <input type="text" class="query-text" ng-model="queryKwd[it.df_id]" ng-keyup="globalFilterModule.enterToQuery({'e':$event,'filter':it,'is_advance':false,'real_search':true})">
+                      <a class="bdp-icon-wrap query-btn" ng-click="globalFilterModule.query(it)">
+                          <i class="bdp-icon ico-search"></i>
+                      </a>
+                  </div>
+
+                  <ul ng-if="!it.config.granularity" ng-show="!showLoading">
+                      <li ng-if="it.config.show_all">
+                          <a ng-click="refreshCharts(it,'',[])" ng-class="{'active':it.range[0] == '' || it.range.length == 0}">全部时间</a>
+                      </li>
+                      <li ng-repeat="adv in queryString[it.df_id].list | filter:queryString[it.df_id].keyword track by $index" class="adv-item pr">
+                          <a class="filter-list-a" title="{{adv.name}}" ng-class="{'active':it.range[0] == adv.opt_id}" ng-click="refreshCharts(it,adv.name,[adv.opt_id])">
+                             {{adv.name}}
+                          </a>
+                      </li>
+                      <li>
+                          <a ng-click="globalFilterModule.showDatePicker($index, it.range)" ng-class="{'active':it.range.length == 2}">自定义时间段</a>
+                      </li>
+                  </ul>
+
+                  <!--granularity not null-->
+                  <ul ng-if="it.config.granularity !== ''" ng-show="!showLoading">
+                      <li ng-if="it.config.show_all">
+                          <a class="cursor-pointer" ng-class="{'active':it.range.length == 0 }" ng-click="refreshCharts(it,'',[])">全部时间</a>
+                      </li>
+                      <li ng-if="it.config.granularity !== 'week'" ng-repeat="adv in queryString[it.df_id].list | query_inner:queryString[it.df_id].keyword:it.config.granularity track by $index">
+                          <a class="filter-list-a" title="{{adv | timestamp2LocaleDate: it.config.granularity}}" ng-click="refreshCharts(it,'',[adv])" ng-class="{'active':it.range[0] == adv }">
+                              {{adv | timestamp2LocaleDate: it.config.granularity}}
+                          </a>
+                      </li>
+                      <li ng-if="it.config.granularity === 'week'" ng-repeat="adv in queryString[it.df_id].list | query_inner:queryString[it.df_id].keyword:it.config.granularity track by $index">
+                          <a class="filter-list-a" title="{{adv | timestamp2LocaleDate: it.config.granularity}}({{adv | weekFormat}})" ng-click="refreshCharts(it,'',[adv])" ng-class="{'active':it.range[0] == adv }">
+                              {{adv | timestamp2LocaleDate: it.config.granularity}}
+                              <span>({{adv | weekFormat}})</span>
+                          </a>
+                      </li>
+                  </ul>
+              </div>
+          </div>
+      </dd>
+  </dl>
+</div>
+<div class="global-filter-r global-filter-handler">
+  <a class="bdp-icon-wrap cursor-pointer" ng-if="scrollHandler.nextIndex !== 0 && scrollHandler.nextIndex !== globalDashFilterDisplay.length" ng-click="scrollHandler.scroll(1)"><i class="bdp-icon ico-triangle-right"></i></a>
+</div>

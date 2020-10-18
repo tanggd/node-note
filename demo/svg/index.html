@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Vue 测试实例</title>
+  <script src="https://unpkg.com/vue/dist/vue.js"></script>
+  <style>
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="500" height="500" stroke="blue">
+      <text 
+      v-for="(item,index) in textInfo" class="item" :style="`--i:${index}`"
+        :x="`${250-xIndex*index}`" 
+        :y="`${250-yIndex*index}`" 
+        fill="#7260AF"
+        font-family="PingFang SC, Helvetica Neue, Helvetica, STHeitiSC-Light, WOL_SB, Segoe UI Semibold, Segoe UI, Tahoma, Helvetica, sans-serif"
+        font-size="18" 
+        font-weight="normal" 
+        font-style="normal" 
+        font-stretch="normal" 
+        text-anchor="middle"
+        :opacity="`${1-index/10}`">
+        {{item.textKey}}
+      </text>
+    </svg>
+  </div>
+
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data() {
+        return {
+          xIndex: 10,
+          yIndex: 20,
+          textInfo: [{
+              "textKey": "金融在线"
+            },
+            {
+              "textKey": "保险欺诈"
+            },
+            {
+              "textKey": "现金价值"
+            },
+            {
+              "textKey": "互联网产品"
+            },
+            // {
+            //   "textKey": "线上资料库"
+            // },
+            // {
+            //   "textKey": "保单贷款"
+            // },
+            // {
+            //   "textKey": "风险意识"
+            // },
+            // {
+            //   "textKey": "保额确定"
+            // },
+            // {
+            //   "textKey": "E行销"
+            // },
+            // {
+            //   "textKey": "分红险"
+            // },
+            // {
+            //   "textKey": "保险红包"
+            // },
+            // {
+            //   "textKey": "签单法宝"
+            // },
+            // {
+            //   "textKey": "非法集资"
+            // },
+            // {
+            //   "textKey": "如何轻互动"
+            // },
+            // {
+            //   "textKey": "画图说保险"
+            // }
+          ],
+        }
+      },
+      mounted() {},
+      methods: {
+        onHover(item) {
+          console.log(item)
+        }
+      }
+    })
+  </script>
+</body>
+
+</html>
